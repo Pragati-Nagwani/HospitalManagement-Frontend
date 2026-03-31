@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Hospital Management</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .font-serif-dm { font-family: 'DM Serif Display', serif; }
+        body { font-family: 'DM Sans', sans-serif; background: #f0f4f8; color: #1a202c; }
+        .card-hover:hover { transform: translateY(-5px); transition: transform 0.3s ease; }
+    </style>
+</head>
+<body class="min-h-screen py-16 px-4 flex flex-col items-center">
+
+    <div class="w-full max-w-[1200px] text-center mb-16">
+        <h1 class="text-[3.5rem] tracking-[-1px] text-[#0a6e6e] font-serif-dm mb-4">Hospital Management</h1>
+        <p class="text-[#718096] text-[1.1rem] font-light max-w-2xl mx-auto">Meet the development team behind our world-class medical operations management system.</p>
+    </div>
+
+    <!-- Developers Grid -->
+    <div class="w-full max-w-[1100px] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        
+        <!-- Developer Card Component (Repeat 6 times) -->
+        <div th:each="dev : ${ {
+            {'name': 'Aniket', 'role': 'Room Management', 'link': '/rooms/General'},
+            {'name': 'Nikhil', 'role': 'Physician and Department Management', 'link': '/'},
+            {'name': 'Suhani', 'role': 'Patient and Appointment Management', 'link': '/'},
+            {'name': 'Rohit', 'role': 'Medication and Prescription Management', 'link': '/'},
+            {'name': 'Mayank', 'role': 'Nurse Management', 'link': '/'},
+            {'name': 'Pragati', 'role': 'Procedure and Certification Management', 'link': '/'}
+        } }" class="bg-white rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.08)] overflow-hidden flex flex-col items-center p-8 card-hover text-center">
+            
+            <!-- Profile Image Holder -->
+            <div class="mb-6 w-32 h-32 rounded-full border-4 border-[#e6f9f3] overflow-hidden bg-[#f7fffe]">
+                <img th:src="@{/user.png}" alt="Developer" class="w-full h-full object-cover">
+            </div>
+
+            <!-- Name -->
+            <h2 class="text-[1.5rem] font-semibold text-[#1a202c] mb-1" th:text="${dev.name}">Aniket</h2>
+            <p class="text-[#718096] text-[0.88rem] uppercase tracking-wider font-semibold mb-6 h-12 flex items-center justify-center" th:text="${dev.role}">Software Developer</p>
+
+            <!-- View Work Button -->
+            <a th:href="${dev.link}" class="w-full text-center bg-[#0a6e6e] hover:bg-[#085a5a] text-white font-medium py-3 rounded-[10px] text-[0.95rem] transition-colors shadow-sm">
+                View Work
+            </a>
+        </div>
+
+    </div>
+
+
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>[[${roomType}]] Rooms</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .font-serif-dm { font-family: 'DM Serif Display', serif; }
+        body { font-family: 'DM Sans', sans-serif; background: #f0f4f8; color: #1a202c; }
+    </style>
+</head>
+<body class="min-h-screen py-12 flex flex-col items-center px-4">
+    
+    <div class="w-full max-w-[960px] mb-7 flex flex-col items-center text-center">
+        <h1 class="text-[2.4rem] tracking-[-0.5px] mb-1.5 text-[#0a6e6e] font-serif-dm"><span th:text="${roomType}">General</span> Rooms</h1>
+        <p class="text-[#718096] text-[0.95rem] font-light mt-1">Browse available rooms and their availability</p>
+    </div>
+
+    <!-- Alert Success -->
+    <div th:if="${popupMessage != null}" class="w-full max-w-[960px] bg-[#e6f9f3] text-[#0a6e6e] border border-[#12b886] rounded-[10px] py-2.5 px-[18px] mb-5 text-[0.88rem] font-medium flex items-center gap-2">
+        ✅ <span th:text="${popupMessage}"></span>
+    </div>
+
+    <!-- Top Action Bar -->
+    <div class="w-full max-w-[960px] flex gap-2.5 mb-6 items-center flex-wrap">
+        <a href="/rooms/General" th:classappend="${roomType == 'General' ? 'bg-[#0a6e6e] text-white border-transparent' : 'bg-white text-[#1a202c] border-[#e2e8f0]'}" class="px-5 py-3 rounded-[10px] border-2 font-medium transition-colors text-[0.95rem] shadow-[0_4px_24px_rgba(0,0,0,0.08)]">General</a>
+        <a href="/rooms/ICU" th:classappend="${roomType == 'ICU' ? 'bg-[#0a6e6e] text-white border-transparent' : 'bg-white text-[#1a202c] border-[#e2e8f0]'}" class="px-5 py-3 rounded-[10px] border-2 font-medium transition-colors text-[0.95rem] shadow-[0_4px_24px_rgba(0,0,0,0.08)]">ICU</a>
+        <a href="/rooms/Private" th:classappend="${roomType == 'Private' ? 'bg-[#0a6e6e] text-white border-transparent' : 'bg-white text-[#1a202c] border-[#e2e8f0]'}" class="px-5 py-3 rounded-[10px] border-2 font-medium transition-colors text-[0.95rem] shadow-[0_4px_24px_rgba(0,0,0,0.08)]">Private</a>
+        <a href="/rooms/Single" th:classappend="${roomType == 'Single' ? 'bg-[#0a6e6e] text-white border-transparent' : 'bg-white text-[#1a202c] border-[#e2e8f0]'}" class="px-5 py-3 rounded-[10px] border-2 font-medium transition-colors text-[0.95rem] shadow-[0_4px_24px_rgba(0,0,0,0.08)]">Single</a>
+        
+        <a href="/rooms/new" class="ml-auto bg-[#0a6e6e] hover:bg-[#085a5a] text-white shadow-[0_4px_24px_rgba(0,0,0,0.08)] font-medium rounded-[10px] px-6 py-3 transition-colors text-[0.95rem] flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            Add Room
+        </a>
+    </div>
+
+    <div class="w-full max-w-[960px]">
+        <div class="text-[0.88rem] text-[#718096] mb-3 pl-1">
+            Showing <span class="text-[#0a6e6e] font-semibold" th:text="${page != null ? page.totalElements : '0'}">26</span> result(s)
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.08)] overflow-hidden">
+            <div th:if="${#lists.isEmpty(rooms)}" class="text-center py-12 text-[#718096]">
+                <p>No rooms found for this type.</p>
+            </div>
+
+            <table th:unless="${#lists.isEmpty(rooms)}" class="w-full text-left border-collapse table-fixed">
+                <thead class="bg-[#0a6e6e] text-white">
+                    <tr>
+                        <th class="py-4 px-6 font-medium text-[0.85rem] tracking-[0.08em] uppercase border-b-0 w-[20%] text-center">Room Number</th>
+                        <th class="py-4 px-6 font-medium text-[0.85rem] tracking-[0.08em] uppercase border-b-0 w-[35%] text-center">Block</th>
+                        <th class="py-4 px-6 font-medium text-[0.85rem] tracking-[0.08em] uppercase border-b-0 w-[20%] text-center">Availability</th>
+                        <th class="py-4 px-6 font-medium text-[0.85rem] tracking-[0.08em] uppercase border-b-0 w-[25%] text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="room, stat : ${rooms}" 
+                        class="border-b border-[#e2e8f0] hover:bg-[#f7fffe] transition-colors cursor-pointer last:border-b-0"
+                        th:onclick="'window.location.href=\'/stays/' + ${room.roomNumber} + '\''"
+                        title="Click to view stays for this room">
+                        <td class="py-4 px-6 text-[0.97rem] align-middle text-center" th:text="${room.roomNumber}">101</td>
+                        <td class="py-4 px-6 text-[0.97rem] align-middle font-medium text-center">
+                            <span th:if="${room.block != null and room.block.contains('-')}" 
+                                  th:text="'Floor ' + ${#strings.substringBefore(room.block, '-')} + ' • Block ' + ${#strings.substringAfter(room.block, '-')}">
+                            </span>
+                            <span th:unless="${room.block != null and room.block.contains('-')}" th:text="${room.block}">
+                            </span>
+                        </td>
+                        <td class="py-4 px-6 align-middle text-center">
+                            <span th:class="${!room.unavailable ? 'inline-block bg-[#e6f9f3] text-[#12b886] px-3 py-1.5 rounded-[20px] text-[0.85rem] font-bold tracking-wide' : 'inline-block bg-[#fff5f5] text-[#e53e3e] px-3 py-1.5 rounded-[20px] text-[0.85rem] font-bold tracking-wide'}"
+                                  th:text="${!room.unavailable ? 'AVAILABLE' : 'OCCUPIED'}">AVAILABLE</span>
+                        </td>
+                        <td class="py-3 px-6 align-middle text-center" onclick="event.stopPropagation()">
+                            <div class="flex gap-2 justify-center items-center">
+                                <a th:href="'/rooms/' + ${room.roomNumber} + '/edit'" class="w-[90px] px-2 py-1.5 bg-[#0a6e6e] text-white border-none rounded-[7px] text-[0.82rem] cursor-pointer hover:bg-[#085a5a] transition-colors flex items-center justify-center gap-1.5 font-medium">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                      <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                    </svg>
+                                    Update
+                                </a>
+                                
+                                <form th:action="'/rooms/' + ${room.roomNumber} + '/toggle'" method="post" class="inline m-0 flex items-center">
+                                    <input type="hidden" name="unavailable" th:value="${room.unavailable}" />
+                                    <input type="hidden" name="roomType" th:value="${roomType}" />
+                                    <button type="submit" class="w-[90px] px-2 py-1.5 bg-white border-2 border-[#e2e8f0] text-[#718096] rounded-[7px] text-[0.82rem] cursor-pointer hover:border-[#0a6e6e] hover:text-[#0a6e6e] transition-colors font-medium flex items-center justify-center gap-1.5"
+                                            th:title="${!room.unavailable ? 'Mark as Occupied' : 'Mark as Available'}">
+                                            
+                                        <!-- Occupy Icon (Lock Closed) -->
+                                        <svg th:if="${!room.unavailable}" xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                        </svg>
+                                        
+                                        <!-- Free Icon (Lock Open) -->
+                                        <svg th:if="${room.unavailable}" xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                          <path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/>
+                                        </svg>
+                                        
+                                        <span th:text="${!room.unavailable ? 'Occupy' : 'Free'}"></span>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination Section -->
+        <div class="mt-8 flex justify-center items-center gap-4" th:if="${page != null and page.totalPages > 0}">
+            <div class="text-[#718096] text-[0.88rem]">
+                Page <span class="text-[#0a6e6e] font-semibold" th:text="${page.number + 1}">1</span> of <span class="text-[#0a6e6e] font-semibold" th:text="${page.totalPages}">6</span>
+            </div>
+
+            <div class="flex gap-2">
+                <a th:if="${page.number > 0}" th:href="@{'/rooms/' + ${roomType}(page=${page.number - 1})}" class="px-4 py-2 bg-white border-2 border-[#e2e8f0] rounded-[10px] text-[0.95rem] text-[#718096] hover:text-[#0a6e6e] hover:border-[#0a6e6e] transition-colors shadow-[0_4px_24px_rgba(0,0,0,0.08)]">&larr; Prev</a>
+                
+                <a th:if="${page.number < page.totalPages - 1}" th:href="@{'/rooms/' + ${roomType}(page=${page.number + 1})}" class="px-4 py-2 bg-white border-2 border-[#e2e8f0] rounded-[10px] text-[0.95rem] text-[#718096] hover:text-[#0a6e6e] hover:border-[#0a6e6e] transition-colors shadow-[0_4px_24px_rgba(0,0,0,0.08)]">Next &rarr;</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
