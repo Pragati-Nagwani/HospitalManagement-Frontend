@@ -45,9 +45,8 @@
 <body>
 
 <div class="container">
-    <a th:href="@{/api/procedures}" class="back-btn">← Back to Procedures</a>
+    <a th:href="@{/procedures}" class="back-btn">← Back to Procedures</a>
 
-    <!-- Flash message -->
     <div th:if="${message != null and !message.isBlank()}"
          th:class="${message.contains('Error') or message.contains('not found') or message.contains('Failed') or message.contains('duplicate') ? 'alert alert-error' : 'alert alert-success'}">
         <span th:text="${message.contains('Error') or message.contains('not found') or message.contains('Failed') or message.contains('duplicate') ? '⚠️' : '✅'}"></span>
@@ -97,13 +96,13 @@
     </div>
 </div>
 
-<!-- ── Renew Modal ─────────────────────────────────────────────────────── -->
+<!-- Renew Modal -->
 <div id="renewModal" class="modal-overlay">
     <div class="modal-content">
         <h2 class="modal-title">Renew Certification</h2>
         <p id="displayPhysicianName" class="modal-subtitle"></p>
 
-        <form th:action="@{/api/trainedIn/renew}" method="post" onsubmit="return validateRenewDates()">
+        <form th:action="@{/trainedIn/renew}" method="post" onsubmit="return validateRenewDates()">
             <input type="hidden" name="treatmentId" th:value="${code}" />
             <input type="hidden" name="procedureName" th:value="${procedureName}" />
             <input type="hidden" id="hiddenPhysicianId" name="physicianId" />
@@ -125,13 +124,13 @@
     </div>
 </div>
 
-<!-- ── Add Certification Modal ────────────────────────────────────────── -->
+<!-- Add Certification Modal -->
 <div id="addModal" class="modal-overlay">
     <div class="modal-content">
         <h2 class="modal-title">Add Certification</h2>
         <p class="modal-subtitle">Enter the physician ID and certification dates.</p>
 
-        <form id="addCertForm" th:action="@{/api/trainedIn/add}" method="post">
+        <form id="addCertForm" th:action="@{/trainedIn/add}" method="post">
             <input type="hidden" name="treatmentId" th:value="${code}" />
             <input type="hidden" name="procedureName" th:value="${procedureName}" />
 
@@ -159,7 +158,6 @@
 </div>
 
 <script>
-    // ── Renew Modal ──────────────────────────────────────────────────────
     const renewModal = document.getElementById('renewModal');
 
     function openRenewModal(button) {
@@ -186,7 +184,6 @@
         return true;
     }
 
-    // ── Add Modal ────────────────────────────────────────────────────────
     const addModal = document.getElementById('addModal');
 
     function openAddModal() {
@@ -204,10 +201,8 @@
 
     document.getElementById('addCertForm').addEventListener('submit', function(e) {
         e.preventDefault();
-
         let valid = true;
 
-        // Validate physician ID
         const physId = document.getElementById('addPhysicianId').value.trim();
         const physErr = document.getElementById('physicianError');
         if (!physId || parseInt(physId) <= 0) {
@@ -218,7 +213,6 @@
             physErr.style.display = 'none';
         }
 
-        // Validate dates
         const certVal = document.getElementById('addCertDate').value;
         const expVal  = document.getElementById('addExpDate').value;
         const dateErr = document.getElementById('addDateError');
@@ -234,12 +228,9 @@
             dateErr.style.display = 'none';
         }
 
-        if (valid) {
-            this.submit();
-        }
+        if (valid) this.submit();
     });
 
-    // Close on backdrop click
     window.addEventListener('click', function(e) {
         if (e.target === renewModal) closeRenewModal();
         if (e.target === addModal)   closeAddModal();

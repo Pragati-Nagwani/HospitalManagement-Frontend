@@ -13,7 +13,6 @@ import com.frontend.HospitalManagement.dto.TrainedIn.TrainedInResponse;
 import com.frontend.HospitalManagement.service.ProcedureService;
 
 @Controller
-@RequestMapping("/api")
 public class ProcedureAndCertificationController {
 
     private final ProcedureService apiService;
@@ -69,15 +68,15 @@ public String getProcedures(
 public String addProcedure(@ModelAttribute ProcedureDto procedure) {
     // Trim and validate name before sending to backend
     if (procedure.getName() == null || procedure.getName().trim().isBlank()) {
-        return "redirect:/api/procedures?message=Procedure+name+cannot+be+blank";
+        return "redirect:/procedures?message=Procedure+name+cannot+be+blank";
     }
     procedure.setName(procedure.getName().trim());
     
     try {
         apiService.addProcedure(procedure);
-        return "redirect:/api/procedures?message=Procedure+added+successfully";
+        return "redirect:/procedures?message=Procedure+added+successfully";
     } catch (Exception e) {
-        return "redirect:/api/procedures?message=Failed+to+add+procedure";
+        return "redirect:/procedures?message=Failed+to+add+procedure";
     }
 }
 
@@ -86,7 +85,7 @@ public String updateProcedure(
         @RequestParam Integer code,
         @RequestParam Double cost) {
     apiService.updateProcedureCost(code, cost);
-    return "redirect:/api/procedures?message=Cost+updated+successfully";
+    return "redirect:/procedures?message=Cost+updated+successfully";
 }
 
 @GetMapping("/procedures/{code}/trainedIn")
@@ -133,7 +132,7 @@ String formattedExp  = expDate  + "T00:00:00.000Z";
 
     apiService.renewTrainedIn(treatmentId, physicianId, formattedCert, formattedExp);
 
-    return "redirect:/api/procedures/" + treatmentId + "/trainedIn?procedureName=" + procedureName;
+    return "redirect:/procedures/" + treatmentId + "/trainedIn?procedureName=" + procedureName;
 }
 
 @PostMapping("/trainedIn/add")
@@ -149,14 +148,14 @@ public String addCertification(
 
     try {
         apiService.addTrainedIn(treatmentId, physicianId, formattedCert, formattedExp);
-        return "redirect:/api/procedures/" + treatmentId + "/trainedIn"
+        return "redirect:/procedures/" + treatmentId + "/trainedIn"
                 + "?procedureName=" + procedureName
                 + "&message=Certification+added+successfully";
     } catch (Exception e) {
         String msg = e.getMessage() != null && e.getMessage().contains("duplicate")
                 ? "duplicate+entry+—+this+physician+is+already+certified+for+this+procedure"
                 : "Physician+not+found+or+invalid+input";
-        return "redirect:/api/procedures/" + treatmentId + "/trainedIn"
+        return "redirect:/procedures/" + treatmentId + "/trainedIn"
                 + "?procedureName=" + procedureName
                 + "&message=" + msg;
     }

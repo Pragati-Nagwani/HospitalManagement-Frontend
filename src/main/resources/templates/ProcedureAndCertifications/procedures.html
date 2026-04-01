@@ -30,94 +30,31 @@
         }
 
         .container { width: 100%; max-width: 960px; }
-
         .header { text-align: center; margin-bottom: 28px; }
-
-        .header h1 {
-            font-family: 'DM Serif Display', serif;
-            font-size: 2.4rem;
-            color: var(--primary);
-            letter-spacing: -0.5px;
-        }
-
+        .header h1 { font-family: 'DM Serif Display', serif; font-size: 2.4rem; color: var(--primary); letter-spacing: -0.5px; }
         .header p { color: var(--muted); margin-top: 6px; font-size: 0.95rem; font-weight: 300; }
 
-        /* Alert Styling */
-        .alert {
-            border-radius: 10px;
-            padding: 12px 18px;
-            margin-bottom: 20px;
-            font-size: 0.88rem;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .alert { border-radius: 10px; padding: 12px 18px; margin-bottom: 20px; font-size: 0.88rem; font-weight: 500; display: flex; align-items: center; gap: 8px; }
         .alert-success { background: #e6f9f3; color: #0a6e6e; border: 1px solid #12b886; }
         .alert-error { background: #fff5f5; color: var(--error); border: 1px solid #fc8181; }
 
-        /* Search Bar */
         .search-wrapper { display: flex; gap: 10px; margin-bottom: 24px; }
-        .search-wrapper input {
-            flex: 1;
-            padding: 12px 20px;
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 0.95rem;
-            outline: none;
-            transition: border-color 0.2s;
-            box-shadow: var(--shadow);
-        }
+        .search-wrapper input { flex: 1; padding: 12px 20px; border: 2px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; outline: none; transition: border-color 0.2s; box-shadow: var(--shadow); }
         .search-wrapper input:focus { border-color: var(--primary); }
-        .search-wrapper button {
-            padding: 12px 24px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: var(--shadow);
-        }
+        .search-wrapper button { padding: 12px 24px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 500; cursor: pointer; transition: all 0.2s; box-shadow: var(--shadow); }
         .search-wrapper button:hover { background: #085a5a; transform: translateY(-1px); }
 
-        /* Back Button for Search Results */
-        .back-nav {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 15px;
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.9rem;
-            transition: transform 0.2s;
-        }
+        .back-nav { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 15px; color: var(--primary); text-decoration: none; font-weight: 500; font-size: 0.9rem; transition: transform 0.2s; }
         .back-nav:hover { transform: translateX(-4px); }
 
-        .results-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-bottom: 12px;
-            padding: 0 4px;
-        }
+        .results-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px; padding: 0 4px; }
         .results-info { font-size: 0.88rem; color: var(--muted); }
         .results-info span { color: var(--primary); font-weight: 600; }
 
-        /* Card & Table */
         .card { background: var(--card); border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; }
         table { width: 100%; border-collapse: collapse; }
         thead { background: var(--primary); color: white; }
-        thead th {
-            padding: 16px 24px;
-            text-align: left;
-            font-size: 0.85rem;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-        }
+        thead th { padding: 16px 24px; text-align: left; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; }
         tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
         tbody tr:hover { background: #f7fffe; }
         tbody td { padding: 12px 24px; font-size: 0.97rem; vertical-align: middle; }
@@ -125,61 +62,19 @@
         .procedure-link { color: var(--primary); text-decoration: none; font-weight: 500; }
         .procedure-link:hover { color: var(--accent); text-decoration: underline; }
 
-        .cost-badge {
-            background: #e6f9f3;
-            color: var(--accent);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.88rem;
-            font-weight: 500;
-        }
+        .cost-badge { background: #e6f9f3; color: var(--accent); padding: 4px 12px; border-radius: 20px; font-size: 0.88rem; font-weight: 500; }
 
-        /* Update Form */
         .update-form { display: flex; align-items: center; gap: 8px; }
-        .update-form input {
-            width: 90px;
-            padding: 6px 10px;
-            border: 2px solid var(--border);
-            border-radius: 7px;
-            outline: none;
-        }
-        .btn-update {
-            padding: 6px 14px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 7px;
-            font-size: 0.82rem;
-            cursor: pointer;
-        }
+        .update-form input { width: 90px; padding: 6px 10px; border: 2px solid var(--border); border-radius: 7px; outline: none; }
+        .btn-update { padding: 6px 14px; background: var(--primary); color: white; border: none; border-radius: 7px; font-size: 0.82rem; cursor: pointer; }
 
-        /* Empty State */
         .no-results { text-align: center; padding: 60px 24px; color: var(--muted); }
         .no-results .icon { font-size: 3rem; margin-bottom: 15px; }
-        .btn-reset {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background: var(--primary);
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 500;
-        }
+        .btn-reset { display: inline-block; margin-top: 20px; padding: 10px 20px; background: var(--primary); color: white; text-decoration: none; border-radius: 8px; font-weight: 500; }
 
-        /* Pagination */
         .pagination { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 28px; }
-        .pagination a {
-            padding: 10px 22px;
-            background: var(--card);
-            color: var(--primary);
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 500;
-            box-shadow: var(--shadow);
-        }
+        .pagination a { padding: 10px 22px; background: var(--card); color: var(--primary); text-decoration: none; border-radius: 8px; font-weight: 500; box-shadow: var(--shadow); }
 
-        /* Add Form */
         .add-form-card { background: var(--card); border-radius: 16px; box-shadow: var(--shadow); margin-top: 32px; overflow: hidden; }
         .add-form-header { background: var(--primary); padding: 14px 24px; color: white; }
         .add-form-body { padding: 20px 24px; }
@@ -199,20 +94,20 @@
         <p>Manage healthcare procedures and pricing records</p>
     </div>
 
-    <div th:if="${message != null and !message.isBlank()}" 
+    <div th:if="${message != null and !message.isBlank()}"
          th:class="${message.contains('Failed') or message.contains('blank') ? 'alert alert-error' : 'alert alert-success'}">
         <span th:text="${message.contains('Failed') or message.contains('blank') ? '⚠️' : '✅'}"></span>
         <span th:text="${message}"></span>
     </div>
 
-    <form th:action="@{/api/procedures}" method="get" class="search-wrapper" onsubmit="return validateSearch(this)">
+    <form th:action="@{/procedures}" method="get" class="search-wrapper" onsubmit="return validateSearch(this)">
         <input type="text" name="search" th:value="${search}" placeholder="Search procedures by name..." autocomplete="off" />
         <input type="hidden" name="size" th:value="${size}" />
         <button type="submit">Search</button>
     </form>
 
     <div class="results-header" th:if="${!search.isBlank()}">
-        <a th:href="@{/api/procedures(size=${size})}" class="back-nav">← Back to Full List</a>
+        <a th:href="@{/procedures(size=${size})}" class="back-nav">← Back to Full List</a>
         <div class="results-info">
             Found <span th:text="${totalElements}"></span> results for "<span th:text="${search}"></span>"
         </div>
@@ -233,7 +128,7 @@
                     <td th:text="${currentPage * size + iterStat.index + 1}" style="color: var(--muted); font-size: 0.85rem;"></td>
                     <td>
                         <a class="procedure-link"
-                           th:href="@{/api/procedures/{code}/trainedIn(code=${procedure.code}, procedureName=${procedure.name})}"
+                           th:href="@{/procedures/{code}/trainedIn(code=${procedure.code}, procedureName=${procedure.name})}"
                            th:text="${procedure.name}">
                         </a>
                     </td>
@@ -241,7 +136,7 @@
                         <span class="cost-badge" th:text="'₹ ' + ${procedure.cost}"></span>
                     </td>
                     <td>
-                        <form th:action="@{/api/procedures/update}" method="post" class="update-form">
+                        <form th:action="@{/procedures/update}" method="post" class="update-form">
                             <input type="hidden" name="code" th:value="${procedure.code}" />
                             <input type="number" name="cost" th:placeholder="${procedure.cost}" min="1" step="0.01" required />
                             <button type="submit" class="btn-update">Update Cost</button>
@@ -254,30 +149,28 @@
         <div class="no-results" th:if="${procedures == null or procedures.isEmpty()}">
             <div class="icon">🔎</div>
             <h3 style="color: var(--primary);">No Procedures Found</h3>
-            
             <p th:if="${!search.isBlank()}">
                 We couldn't find anything matching "<strong><span th:text="${search}"></span></strong>".
             </p>
             <p th:unless="${!search.isBlank()}">
                 The medical directory is currently empty. Add a new procedure below to get started.
             </p>
-            
-            <a th:if="${!search.isBlank()}" th:href="@{/api/procedures(size=${size})}" class="btn-reset">
+            <a th:if="${!search.isBlank()}" th:href="@{/procedures(size=${size})}" class="btn-reset">
                 Show All Procedures
             </a>
         </div>
     </div>
 
     <div class="pagination" th:if="${totalPages > 1}">
-        <a th:if="${currentPage > 0}" th:href="@{/api/procedures(page=${currentPage - 1}, size=${size}, search=${search})}">← Previous</a>
+        <a th:if="${currentPage > 0}" th:href="@{/procedures(page=${currentPage - 1}, size=${size}, search=${search})}">← Previous</a>
         <div class="page-info">Page <span th:text="${currentPage + 1}"></span> of <span th:text="${totalPages}"></span></div>
-        <a th:if="${currentPage + 1 < totalPages}" th:href="@{/api/procedures(page=${currentPage + 1}, size=${size}, search=${search})}">Next →</a>
+        <a th:if="${currentPage + 1 < totalPages}" th:href="@{/procedures(page=${currentPage + 1}, size=${size}, search=${search})}">Next →</a>
     </div>
 
     <div class="add-form-card">
         <div class="add-form-header"><h2>+ Add New Procedure</h2></div>
         <div class="add-form-body">
-            <form th:action="@{/api/procedures/add}" method="post" onsubmit="return validateAddForm(this)">
+            <form th:action="@{/procedures/add}" method="post" onsubmit="return validateAddForm(this)">
                 <div class="form-row">
                     <div class="form-group">
                         <label>Procedure Code</label>
@@ -285,7 +178,7 @@
                     </div>
                     <div class="form-group">
                         <label>Procedure Name</label>
-                        <input type="text" name="name" id="addName" placeholder="e.g. CT Scan" required 
+                        <input type="text" name="name" id="addName" placeholder="e.g. CT Scan" required
                                pattern=".*\S+.*" title="Name cannot be empty or just spaces" />
                     </div>
                     <div class="form-group">
@@ -300,7 +193,6 @@
 </div>
 
 <script>
-    // Prevent empty or whitespace-only search
     function validateSearch(form) {
         const val = form.search.value.trim();
         if (val === "" && form.search.value.length > 0) {
@@ -310,7 +202,6 @@
         return true;
     }
 
-    // Final check for the Add form
     function validateAddForm(form) {
         const nameVal = document.getElementById('addName').value.trim();
         if (nameVal === "") {
