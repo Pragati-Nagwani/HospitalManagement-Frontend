@@ -22,6 +22,9 @@ public class NurseApiService {
     @Autowired
     private WebClient webClient;
 
+    public NurseApiService(WebClient webClient) {
+        this.webClient = webClient;
+    }
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     // 🔥 COMMON METHOD (reuse like your RoomService)
@@ -126,17 +129,90 @@ public class NurseApiService {
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(request, headers);
 
-        restTemplate.postForEntity(BASE_CRUD_URL, entity, String.class);
+        webClient.post()
+                .uri("/nurse")
+                .bodyValue(request)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
     }
 
     public void updateNurse(Integer id, NurseDTO nurse) {
 
-        Map<String, Object> body = new HashMap<>();
-        body.put("name", nurse.getName());
-        body.put("position", nurse.getPosition());
-        body.put("registered", nurse.isRegistered());
-        body.put("ssn", nurse.getSsn());
+        Map<String, Object> request = new HashMap<>();
 
-        call("/nurse/" + id, HttpMethod.PUT, body);
+        request.put("name", nurse.getName());
+        request.put("position", nurse.getPosition());
+        request.put("registered", nurse.isRegistered());
+        request.put("ssn", nurse.getSsn());
+
+        webClient.put()
+                .uri("/nurse/" + id)
+                .bodyValue(request)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
     }
+    public NurseDTO getNurseById(Integer id) {
+
+        Map<String, Object> response = webClient.get()
+                .uri("/nurse/" + id + "?projection=nurseView")
+                .retrieve()
+                .bodyToMono(Map.class)
+                .block();
+
+        NurseDTO dto = new NurseDTO();
+
+        dto.setEmployeeId(id);
+        dto.setName((String) response.get("name"));
+        dto.setPosition((String) response.get("position"));
+        dto.setRegistered((Boolean) response.get("registered"));
+
+        return dto;
+    }
+    public Map<String, Object> getAppointmentByNurse(Integer nurseId) {
+
+        String uri = "/appointments/search/byNurse?nurse=http://localhost:9090/nurse/" + nurseId + "&projection=appointmentView";
+
+        Map<String, Object> response = webClient.get()
+                .uri(uri)
+                .retrieve()
+                .bodyToMono(Map.class)
+                .block();
+
+        Map<String, Object> embedded = (Map<String, Object>) response.get("_embedded");
+
+        if (embedded == null || embedded.get("appointments") == null) return null;
+
+        List<Map<String, Object>> list =
+                (List<Map<String, Object>>) embedded.get("appointments");
+
+        if (list.isEmpty()) return null;
+
+        return list.get(0); // first appointment
+    }
+
+    public Map<String, Object> getOnCallByNurse(Integer nurseId) {
+
+        String uri = "/oncalls/search/byNurse?nurse=" + nurseId;
+
+        Map<String, Object> response = webClient.get()
+                .uri(uri)
+                .retrieve()
+                .bodyToMono(Map.class)
+                .block();
+
+        Map<String, Object> embedded = (Map<String, Object>) response.get("_embedded");
+
+        if (embedded == null || embedded.get("oncalls") == null) return null;
+
+        List<Map<String, Object>> list =
+                (List<Map<String, Object>>) embedded.get("oncalls");
+
+        if (list.isEmpty()) return null;
+
+        return list.get(0);
+    }
+
+
 }

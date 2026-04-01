@@ -68,9 +68,12 @@
 <div class="container">
     <div class="card">
 
-        <h2>Add Nurse</h2>
+        <h2>Edit Nurse</h2>
 
-        <form th:action="@{/nurses/add}" method="post" th:object="${nurse}">
+        <form th:action="@{/nurses/update}" method="post" th:object="${nurse}">
+
+            <!-- ✅ HIDDEN ID (VERY IMPORTANT) -->
+            <input type="hidden" th:field="*{employeeId}">
 
             <label>Name</label>
             <input type="text" th:field="*{name}" required>
@@ -84,10 +87,10 @@
                 <option value="false">No</option>
             </select>
 
-            <div class="actions">
-                <button type="submit" class="btn btn-primary">Save</button>
-                <a href="/nurses" class="btn btn-secondary">Cancel</a>
-            </div>
+            <label>SSN</label>
+            <input type="number" th:field="*{ssn}" required>
+
+            <button type="submit">Update</button>
 
         </form>
 
