@@ -119,12 +119,25 @@ public class RoomService {
         try {
             JsonNode roomNode = objectMapper.readTree(json);
             RoomDto room = new RoomDto();
-            room.setRoomNumber(roomNode.path("roomNumber").asInt());
-            room.setBlock(roomNode.path("block").asText(null)); // Might be null
-            if (roomNode.has("blockFloor") && roomNode.has("blockCode")) {
-                room.setBlockFloor(roomNode.path("blockFloor").asInt());
-                room.setBlockCode(roomNode.path("blockCode").asInt());
+            
+            // The JSON from /rooms/{id} typically hides the @Id field or returns it as "id", 
+            // but we already know the roomNumber from the method parameter.
+            if (roomNode.has("roomNumber")) {
+                room.setRoomNumber(roomNode.path("roomNumber").asInt());
+            } else {
+                room.setRoomNumber(roomNumber);
             }
+
+            if (roomNode.has("blockFloor") && roomNode.has("blockCode")) {
+                int floor = roomNode.path("blockFloor").asInt();
+                int code = roomNode.path("blockCode").asInt();
+                room.setBlockFloor(floor);
+                room.setBlockCode(code);
+                room.setBlock(floor + "-" + code); // Set block string for UI compatibility
+            } else {
+                room.setBlock(roomNode.path("block").asText(null)); 
+            }
+            
             room.setRoomType(roomNode.path("roomType").asText());
             room.setStatus(roomNode.path("status").asText());
             room.setUnavailable(roomNode.path("unavailable").asBoolean());
