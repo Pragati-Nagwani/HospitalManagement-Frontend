@@ -6,6 +6,8 @@ import com.frontend.HospitalManagement.dto.Nurse.NurseDTO;
 import com.frontend.HospitalManagement.dto.Nurse.NursePageResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -111,14 +113,20 @@ public class NurseApiService {
 
     public void addNurse(NurseDTO nurse) {
 
-        Map<String, Object> body = new HashMap<>();
-        body.put("employeeId", nurse.getEmployeeId()); // ✅ FIXED
-        body.put("name", nurse.getName());
-        body.put("position", nurse.getPosition());
-        body.put("registered", nurse.isRegistered());
-        body.put("ssn", nurse.getSsn());
+        Map<String, Object> request = new HashMap<>();
 
-        call("/nurse", HttpMethod.POST, body);
+        request.put("employeeId", nurse.getEmployeeId());
+        request.put("name", nurse.getName());
+        request.put("position", nurse.getPosition());
+        request.put("registered", nurse.isRegistered());
+        request.put("ssn", nurse.getSsn()); // ✅ USER INPUT
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(request, headers);
+
+        restTemplate.postForEntity(BASE_CRUD_URL, entity, String.class);
     }
 
     public void updateNurse(Integer id, NurseDTO nurse) {

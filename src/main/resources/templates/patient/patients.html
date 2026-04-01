@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Patients</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f0f4f8;
+            --card: #ffffff;
+            --primary: #0a6e6e;
+            --accent: #12b886;
+            --text: #1a202c;
+            --muted: #718096;
+            --border: #e2e8f0;
+            --shadow: 0 4px 24px rgba(0,0,0,0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 48px 16px;
+        }
+
+        .container { width: 100%; max-width: 1100px; }
+
+        .header { text-align: center; margin-bottom: 28px; }
+
+        .header h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 2.4rem;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+        }
+
+        .header p { color: var(--muted); margin-top: 6px; font-size: 0.95rem; font-weight: 300; }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 24px;
+            align-items: center;
+        }
+
+        .search-wrapper {
+            flex: 1;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .search-wrapper input[type="text"] {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            color: var(--text);
+            background: var(--card);
+            outline: none;
+            transition: border-color 0.2s;
+            box-shadow: var(--shadow);
+        }
+
+        .search-wrapper input[type="text"]:focus { border-color: var(--primary); }
+        .search-wrapper button {
+            padding: 12px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+        }
+
+        .clear-btn {
+            padding: 12px 18px;
+            background: var(--card);
+            color: var(--muted);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        .add-btn {
+            padding: 12px 24px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            white-space: nowrap;
+        }
+
+        .card { background: var(--card); border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; }
+
+        table { width: 100%; border-collapse: collapse; }
+        thead { background: var(--primary); color: white; }
+
+        thead th {
+            padding: 16px 24px;
+            text-align: left;
+            font-weight: 500;
+            font-size: 0.85rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        /* CHANGED: Added cursor pointer for the whole row */
+        tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background 0.15s ease;
+            cursor: pointer;
+        }
+
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: #f7fffe; }
+        tbody td { padding: 14px 24px; font-size: 0.97rem; vertical-align: middle; }
+
+        .btn-edit {
+            padding: 6px 16px;
+            background: #fff8e1;
+            color: #b7791f;
+            border: 1px solid #f6e05e;
+            border-radius: 7px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn-page {
+            padding: 8px 20px;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.88rem;
+        }
+        
+        .btn-page.disabled { background: #cbd5e0; pointer-events: none; }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal { background: var(--card); border-radius: 16px; padding: 36px; width: 480px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
+        .form-group input { width: 100%; padding: 10px 14px; border: 2px solid var(--border); border-radius: 8px; }
+        .btn-submit { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 10px; font-weight: 500; cursor: pointer; }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <div class="header">
+        <h1>Patients</h1>
+        <p>Browse and manage patient records</p>
+    </div>
+
+    <div class="toolbar">
+        <form th:action="@{/patients}" method="get" class="search-wrapper">
+            <input type="hidden" name="page" value="0"/>
+            <input type="text" name="name" th:value="${name}" placeholder="Search by patient name..."/>
+            <button type="submit">Search</button>
+            <a th:href="@{/patients}" class="clear-btn">✕</a>
+        </form>
+        <button class="add-btn" onclick="openAddModal()">+ Add Patient</button>
+    </div>
+
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Phone</th>
+                    <th>PCP Physician</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="p : ${patients}" 
+                    th:onclick="|window.location.href='/patients/' + ${p.ssn} + '/appointments'|">
+                    <td th:text="${p.name}" style="font-weight: 500; color: var(--primary);"></td>
+                    <td th:text="${p.address}"></td>
+                    <td th:text="${p.phone}"></td>
+                    <td th:text="${p.pcpName}"></td>
+                    <td>
+                        <a th:href="@{/patients/edit/{ssn}(ssn=${p.ssn})}" 
+                           class="btn-edit" 
+                           onclick="event.stopPropagation();">✏ Edit</a>
+                    </td>
+                </tr>
+                <tr th:if="${patients.isEmpty()}">
+                    <td colspan="5" style="text-align:center; padding: 40px; color: var(--muted);">No patients found.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="pagination" th:if="${totalPages > 1}">
+            <a th:href="@{/patients(page=${currentPage - 1}, name=${name})}" 
+               class="btn-page" th:classappend="${currentPage == 0} ? 'disabled'">← Previous</a>
+            
+            <span style="color: var(--muted); font-size: 0.9rem;">
+                Page <span th:text="${currentPage + 1}"></span> of <span th:text="${totalPages}"></span>
+            </span>
+
+            <a th:href="@{/patients(page=${currentPage + 1}, name=${name})}" 
+               class="btn-page" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">Next →</a>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="addModalOverlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 style="font-family: 'DM Serif Display'; color: var(--primary);">Add Patient</h3>
+            <button style="background:none; border:none; cursor:pointer; font-size: 20px;" onclick="closeAddModal()">✕</button>
+        </div>
+        <form th:action="@{/patients/add}" method="post">
+            <div class="form-group"><label>SSN</label><input type="number" name="ssn" required/></div>
+            <div class="form-group"><label>Name</label><input type="text" name="name" required/></div>
+            <div class="form-group"><label>Address</label><input type="text" name="address" required/></div>
+            <div class="form-group"><label>Phone</label><input type="text" name="phone" required/></div>
+            <div class="form-group"><label>Insurance ID</label><input type="number" name="insuranceID" required/></div>
+            <div class="form-group"><label>PCP Physician ID</label><input type="number" name="pcpId" required/></div>
+            <button type="submit" class="btn-submit">Save Patient</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openAddModal() { document.getElementById('addModalOverlay').classList.add('active'); }
+    function closeAddModal() { document.getElementById('addModalOverlay').classList.remove('active'); }
+    window.onclick = function(e) { 
+        if (e.target == document.getElementById('addModalOverlay')) closeAddModal(); 
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Book Appointment</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f0f4f8; --card: #ffffff; --primary: #0a6e6e;
+            --accent: #12b886; --text: #1a202c; --muted: #718096;
+            --border: #e2e8f0; --shadow: 0 4px 24px rgba(0,0,0,0.08);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); padding: 48px 16px; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 600px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { font-family: 'DM Serif Display', serif; font-size: 2.2rem; color: var(--primary); }
+        
+        .form-card { background: var(--card); border-radius: 16px; box-shadow: var(--shadow); padding: 32px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+        .form-group input { width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 10px; outline: none; font-family: inherit; }
+        .form-group input:focus { border-color: var(--primary); }
+        
+        .btn-submit { width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 1rem; }
+        .btn-submit:hover { background: #0ca678; transform: translateY(-1px); }
+        .btn-cancel { display: block; text-align: center; margin-top: 15px; color: var(--muted); text-decoration: none; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>New Appointment</h1>
+            <p th:text="'Booking for: ' + ${patientName}"></p>
+        </div>
+
+        <div class="form-card">
+            <form th:action="@{/appointments/save}" th:object="${booking}" method="post">
+                <input type="hidden" th:field="*{patientSsn}" />
+
+                <div class="form-group">
+                    <label>Appointment ID</label>
+                    <input type="number" th:field="*{appointmentId}" placeholder="Unique ID (e.g. 5001)" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Physician Employee ID</label>
+                    <input type="number" th:field="*{physicianId}" placeholder="Enter doctor's ID" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Nurse Employee ID (Optional)</label>
+                    <input type="number" th:field="*{nurseId}" placeholder="Enter nurse ID" />
+                </div>
+
+                <div style="display: flex; gap: 15px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Start Time</label>
+                        <input type="datetime-local" th:field="*{starto}" required />
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>End Time</label>
+                        <input type="datetime-local" th:field="*{endo}" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Examination Room</label>
+                    <input type="text" th:field="*{examinationRoom}" placeholder="e.g. Room 502" required />
+                </div>
+
+                <button type="submit" class="btn-submit">Confirm Booking</button>
+                <a th:href="@{/patients/{ssn}/appointments(ssn=${booking.patientSsn})}" class="btn-cancel">Cancel</a>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add Nurse</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f5f7fa;
+        }
+
+        .container {
+            width: 40%;
+            margin: 50px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            text-align: center;
+            color: #1f6f6d;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            margin-top: 5px;
+        }
+
+        .actions {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #1f6f6d;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #ccc;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="card">
+
+        <h2>Add Nurse</h2>
+
+        <form th:action="@{/nurses/add}" method="post" th:object="${nurse}">
+
+            <label>Name</label>
+            <input type="text" th:field="*{name}" required>
+
+            <label>Position</label>
+            <input type="text" th:field="*{position}" required>
+
+            <label>Registered</label>
+            <select th:field="*{registered}">
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+            </select>
+
+            <div class="actions">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a href="/nurses" class="btn btn-secondary">Cancel</a>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+</body>
+</html>

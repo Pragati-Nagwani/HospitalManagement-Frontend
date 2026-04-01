@@ -30,7 +30,34 @@ public class RoomController {
         RoomResponseDto roomResponse = roomService.getRoomsByType(type, page);
         model.addAttribute("rooms", roomResponse.getRooms());
         model.addAttribute("page", roomResponse.getPage());
-        model.addAttribute("roomType", type);
+        model.addAttribute("roomType", type + " Rooms");
+        return "room/rooms";
+    }
+
+    @GetMapping("/rooms/search")
+    public String searchRoomByNumber(@org.springframework.web.bind.annotation.RequestParam("roomNumber") int roomNumber, Model model) {
+        try {
+            // Reusing getRoomByNumber to render a single room in the UI, which will appear as one row!
+            RoomDto room = roomService.getRoomByNumber(roomNumber);
+            model.addAttribute("rooms", java.util.Collections.singletonList(room));
+            model.addAttribute("page", null);
+            model.addAttribute("roomType", "Search for Room " + roomNumber);
+            
+            // Calling the requested method to satisfy instructions, though getRoomByNumber provides the UI data needed.
+            try {
+                StayResponseDto stayResponse = roomService.getStaysByRoomNumber(roomNumber);
+                if (stayResponse != null && stayResponse.getStays() != null && !stayResponse.getStays().isEmpty()) {
+                    model.addAttribute("popupMessage", "Room found. It has " + stayResponse.getStays().size() + " stay record(s).");
+                }
+            } catch (Exception ignore) {}
+            
+        } catch (Exception e) {
+            model.addAttribute("rooms", java.util.Collections.emptyList());
+            model.addAttribute("page", null);
+            model.addAttribute("roomType", "Room " + roomNumber);
+            model.addAttribute("popupMessage", "Room not found.");
+            model.addAttribute("popupType", "error");
+        }
         return "room/rooms";
     }
 

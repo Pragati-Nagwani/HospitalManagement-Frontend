@@ -1,153 +1,249 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Nurse List</title>
+    <title>Nurse Management</title>
+
     <style>
-
         body {
-            font-family: Arial;
-            background: #f5f5f5;
-        }
-
-        .container {
-            width: 80%;
-            margin: auto;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .header h2 {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f5f7fa;
             margin: 0;
         }
 
-        .btn {
-            padding: 8px 15px;
-            border: none;
-            background: #007bff;
-            color: white;
-            cursor: pointer;
-            border-radius: 5px;
+        .container {
+            width: 90%;
+            margin: auto;
+            padding: 30px 0;
         }
 
-        .search-filter {
+        /* HEADER */
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #1f6f6d;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            color: #6c757d;
+        }
+
+        /* TOP BAR */
+        .top-bar {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 15px;
+            align-items: center;
+            margin-bottom: 20px;
         }
 
-        input, select {
-            padding: 5px;
-            width: 200px;
+        .search-box {
+            display: flex;
+            gap: 10px;
         }
 
+        .search-box input {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            width: 220px;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #1f6f6d;
+            color: white;
+        }
+
+        .btn-outline {
+            border: 1px solid #1f6f6d;
+            background: white;
+            color: #1f6f6d;
+        }
+
+        /* CARD */
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        /* TABLE */
         table {
             width: 100%;
             border-collapse: collapse;
         }
 
-        th, td {
-            border: 1px solid black;
-            padding: 10px;
-            text-align: center;
+        thead {
+            background: #1f6f6d;
+            color: white;
         }
 
+        th, td {
+            padding: 14px;
+            text-align: left;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #eee;
+        }
+
+        tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        /* STATUS BADGE */
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .busy {
+            background: #ffe0e0;
+            color: #d93025;
+        }
+
+        .available {
+            background: #e0f5ec;
+            color: #1e8e5a;
+        }
+
+        /* ACTION BUTTONS */
+        .actions a {
+            margin-right: 8px;
+            text-decoration: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .view-btn {
+            border: 1px solid #ccc;
+        }
+
+        .edit-btn {
+            background: #1f6f6d;
+            color: white;
+        }
+
+        /* PAGINATION */
         .pagination {
             text-align: center;
-            margin-top: 15px;
+            margin-top: 20px;
         }
 
-        .action-btn {
-            color: blue;
-            cursor: pointer;
-            margin: 0 5px;
+        .pagination a {
+            margin: 0 4px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            border: 1px solid #ddd;
+            color: #333;
+        }
+
+        .pagination a.active {
+            background: #1f6f6d;
+            color: white;
+        }
+
+        .pagination a:hover {
+            background: #eaeaea;
         }
 
     </style>
 </head>
+
 <body>
 
 <div class="container">
 
-    <!-- Header -->
+    <!-- HEADER -->
     <div class="header">
-        <h2>Nurse List</h2>
-        <button class="btn"><a th:href="@{/nurses/add}">Add Nurse</a></button>
+        <h1>Nurse Management</h1>
+        <p>Browse nurses and their availability</p>
     </div>
 
-    <!-- Search + Filter -->
-    <div class="search-filter">
-        <input type="text" placeholder="Search...">
-        <select>
-            <option>Filter by Position</option>
-            <option>Nurse</option>
-            <option>Head Nurse</option>
-        </select>
+    <!-- TOP BAR -->
+    <div class="top-bar">
+
+        <form class="search-box" method="get" action="/nurses">
+            <input type="text" name="keyword" placeholder="Search nurse..." th:value="${keyword}">
+            <button class="btn btn-primary">Search</button>
+        </form>
+
+        <a href="/nurses/add" class="btn btn-primary">+ Add Nurse</a>
+
     </div>
 
-    <!-- Table -->
-    <table>
-        <tr>
-            <th>Sr No</th>
-            <th>Name</th>
-            <th>Position</th>
-            <th>Registered</th>
-            <th>Availability</th>
-            <th>Action</th>
-        </tr>
+    <!-- TABLE CARD -->
+    <div class="card">
 
-        <tr th:each="n, iter : ${nurses}">
-            <td th:text="${currentPage * pageSize + iter.index + 1}"></td>
-            <td th:text="${n.name}"></td>
-            <td th:text="${n.position}"></td>
-            <td th:text="${n.registered ? 'Yes' : 'No'}"></td>
-            <td th:text="${n.availability}"></td>
-            <td>
-                <a th:href="@{/nurses/view/{id}(id=${n.employeeId})}">View</a>
-                <a th:href="@{/nurses/edit/{id}(id=${n.employeeId})}">Edit</a>
-            </td>
-        </tr>
+        <table>
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Position</th>
+                <th>Registered</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
 
-    </table>
+            <tbody>
+            <tr th:each="nurse, stat : ${nurses}">
+                <td th:text="${stat.index + 1}"></td>
+                <td th:text="${nurse.name}"></td>
+                <td th:text="${nurse.position}"></td>
+                <td th:text="${nurse.registered ? 'Yes' : 'No'}"></td>
 
+                <td>
+                    <span th:class="'badge ' + (${nurse.availability} == 'AVAILABLE' ? 'available' : 'busy')"
+                          th:text="${nurse.availability}">
+                    </span>
+                </td>
+
+                <td class="actions">
+                    <a th:href="@{/nurses/view/{id}(id=${nurse.employeeId})}" class="view-btn">View</a>
+                    <a th:href="@{/nurses/edit/{id}(id=${nurse.employeeId})}" class="edit-btn">Edit</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+    <!-- PAGINATION -->
     <div class="pagination">
 
-    <span>
-        Page <b th:text="${currentPage + 1}"></b> of
-        <b th:text="${totalPages}"></b>
-    </span>
+        <a th:if="${currentPage > 0}"
+           th:href="@{/nurses(page=${currentPage - 1}, keyword=${keyword})}">
+            Prev
+        </a>
 
-        <div class="page-buttons">
-
-            <!-- Previous -->
-            <a th:if="${currentPage > 0}"
-               th:href="@{/nurses(page=${currentPage - 1}, size=${pageSize})}">
-                Previous
-            </a>
-
-            <!-- Page Numbers -->
-            <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
-
-            <a th:href="@{/nurses(page=${i}, size=${pageSize})}"
+        <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+            <a th:href="@{/nurses(page=${i}, keyword=${keyword})}"
                th:text="${i + 1}"
                th:classappend="${i == currentPage} ? 'active' : ''">
             </a>
-
         </span>
 
-            <!-- Next -->
-            <a th:if="${currentPage + 1 < totalPages}"
-               th:href="@{/nurses(page=${currentPage + 1}, size=${pageSize})}">
-                Next
-            </a>
+        <a th:if="${currentPage < totalPages - 1}"
+           th:href="@{/nurses(page=${currentPage + 1}, keyword=${keyword})}">
+            Next
+        </a>
 
-        </div>
     </div>
 
 </div>

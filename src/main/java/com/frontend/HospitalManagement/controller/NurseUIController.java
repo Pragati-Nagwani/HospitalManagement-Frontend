@@ -15,22 +15,21 @@ public class NurseUIController {
     private NurseApiService nurseApiService;
 
     @GetMapping("/nurses")
-    public String getNurses(Model model,
-                            @RequestParam(defaultValue = "0") int page,
-                            @RequestParam(defaultValue = "10") int size,
-                            @RequestParam(required = false) String keyword,
-                            @RequestParam(required = false) String position) {
+    public String getNurses(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String keyword,
+            Model model
+    ) {
 
-        NursePageResponse response = nurseApiService.getNurses(page, size, keyword, position);
+        NursePageResponse response = nurseApiService.getNurses(page, size, keyword, null);
 
         model.addAttribute("nurses", response.getNurses());
-        model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", response.getTotalPages());
-        model.addAttribute("pageSize", size);
+        model.addAttribute("currentPage", page);
         model.addAttribute("keyword", keyword);
-        model.addAttribute("position", position);
 
-        return "nurses";
+        return "nurse/nurses";
     }
 
     @GetMapping("/nurses/add")
@@ -38,7 +37,7 @@ public class NurseUIController {
 
         model.addAttribute("nurse", new NurseDTO());
 
-        return "add-nurse";
+        return "nurse/add-nurse";
     }
 
     @PostMapping("/nurses/save")
@@ -46,7 +45,7 @@ public class NurseUIController {
 
         nurseApiService.addNurse(nurse);
 
-        return "redirect:/nurses";
+        return "redirect:/nurse/nurses";
     }
 
     @GetMapping("/nurses/edit/{id}")
@@ -58,7 +57,7 @@ public class NurseUIController {
 
         model.addAttribute("nurse", nurse);
 
-        return "edit-nurse";
+        return "nurse/edit-nurse";
     }
 
     @PostMapping("/nurses/update/{id}")
@@ -67,7 +66,7 @@ public class NurseUIController {
 
         nurseApiService.updateNurse(id, nurse);
 
-        return "redirect:/nurses";
+        return "redirect:/nurse/nurses";
     }
 
     @GetMapping("/nurses/view/{id}")
@@ -78,6 +77,14 @@ public class NurseUIController {
 
         model.addAttribute("nurseId", id);
 
-        return "nurse-details";
+        return "nurse/nurse-details";
+    }
+
+    @PostMapping("/nurses/add")
+    public String addNurse(@ModelAttribute NurseDTO nurse) {
+
+        nurseApiService.addNurse(nurse);
+
+        return "redirect:/nurses";
     }
 }
