@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Patient Appointments</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f0f4f8; --card: #ffffff; --primary: #0a6e6e;
+            --accent: #12b886; --text: #1a202c; --muted: #718096;
+            --border: #e2e8f0; --shadow: 0 4px 24px rgba(0,0,0,0.08);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); padding: 48px 16px; display: flex; flex-direction: column; align-items: center; }
+        
+        .container { width: 100%; max-width: 1100px; }
+        
+        .header { text-align: center; margin-bottom: 32px; position: relative; }
+        .header h1 { font-family: 'DM Serif Display', serif; font-size: 2.8rem; color: var(--primary); margin-top: 10px; }
+        
+        .toolbar { margin-bottom: 20px; width: 100%; display: flex; align-items: center; }
+
+        .btn-back { 
+            padding: 10px 20px; background: var(--card); border: 1px solid var(--border);
+            border-radius: 10px; text-decoration: none; color: var(--muted); font-size: 0.9rem;
+            transition: 0.2s; box-shadow: var(--shadow); display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-back:hover { color: var(--primary); border-color: var(--primary); }
+
+        .card { background: var(--card); border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; }
+
+        table { width: 100%; border-collapse: collapse; }
+        thead { background: var(--primary); color: white; }
+        th { padding: 18px 24px; text-align: left; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; }
+        
+        tbody tr { border-bottom: 1px solid var(--border); transition: 0.2s; }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: #f8fcfb; }
+        td { padding: 16px 24px; font-size: 0.95rem; color: var(--text); }
+
+        .room-badge {
+            display: inline-block; padding: 4px 12px; border-radius: 20px;
+            background: #e6f9f3; color: var(--accent); font-weight: 600; font-size: 0.8rem;
+        }
+
+        /* ── Pagination & Bottom Actions ── */
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            background: #fcfdfe;
+            border-top: 1px solid var(--border);
+        }
+
+        .pagination { display: flex; gap: 8px; align-items: center; }
+        .page-info { font-size: 0.88rem; color: var(--muted); margin: 0 10px; }
+
+        .btn-page {
+            padding: 8px 18px; background: var(--primary); color: white;
+            border: none; border-radius: 8px; font-size: 0.85rem;
+            text-decoration: none; transition: 0.2s;
+        }
+        .btn-page:hover { background: #085a5a; }
+        .btn-page.disabled { background: #cbd5e0; pointer-events: none; }
+
+        .btn-book {
+            padding: 12px 28px; background: var(--accent); color: white; border: none;
+            border-radius: 10px; text-decoration: none; font-size: 0.95rem; font-weight: 500;
+            transition: 0.2s, transform 0.1s; box-shadow: 0 4px 12px rgba(18, 184, 134, 0.2);
+        }
+        .btn-book:hover { background: #0ca678; transform: translateY(-1px); }
+
+        .no-data { padding: 60px; text-align: center; color: var(--muted); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <div class="toolbar">
+        <a th:href="@{/patients}" class="btn-back">← Back to Patients</a>
+    </div>
+
+    <div class="header">
+        <h1 th:text="'Appointments: ' + ${patientName}">Appointments: Neha Verma</h1>
+        <p style="color: var(--muted); font-weight: 300;">Patient Consultation History</p>
+    </div>
+
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Sr. No</th>
+                    <th>Physician</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Room</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="app, iterStat : ${appointments}">
+                    <td th:text="${iterStat.count}" style="font-weight: 500; color: var(--muted);"></td>
+                    <td th:text="${app.physicianName}" style="font-weight: 500; color: var(--primary);"></td>
+                    <td th:text="${app.starto}"></td>
+                    <td th:text="${app.endo}"></td>
+                    <td><span class="room-badge" th:text="${app.examinationRoom}"></span></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(appointments)}">
+                    <td colspan="5" class="no-data">No appointments found for this patient.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="card-footer">
+            <div class="pagination">
+                <a th:href="@{/patients/{ssn}/appointments(ssn=${ssn}, page=${currentPage - 1})}" 
+                   class="btn-page" th:classappend="${currentPage == 0} ? 'disabled'">Previous</a>
+                
+                <span class="page-info">Page <strong th:text="${currentPage + 1}">1</strong> of <strong th:text="${totalPages}">1</strong></span>
+                
+                <a th:href="@{/patients/{ssn}/appointments(ssn=${ssn}, page=${currentPage + 1})}" 
+                   class="btn-page" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">Next</a>
+            </div>
+
+            <a th:href="@{/appointments/book(ssn=${ssn})}" class="btn-book">+ Book New Appointment</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

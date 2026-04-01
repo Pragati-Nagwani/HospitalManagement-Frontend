@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Physician Certifications</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f8fafc; --primary: #0a6e6e; --accent: #12b886; --error: #e53e3e;
+            --border: #e2e8f0; --card: #ffffff; --shadow: 0 10px 25px rgba(0,0,0,0.1); --muted: #718096;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); padding: 40px 20px; color: #1a202c; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        .back-btn { display: inline-flex; align-items: center; margin-bottom: 24px; color: var(--primary); text-decoration: none; font-weight: 500; }
+        .header { margin-bottom: 32px; border-bottom: 2px solid var(--border); padding-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-family: 'DM Serif Display', serif; color: var(--primary); font-size: 2.4rem; }
+        .card { background: var(--card); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        thead { background: var(--primary); color: white; }
+        th { padding: 16px 20px; text-align: left; font-size: 0.8rem; text-transform: uppercase; }
+        td { padding: 16px 20px; border-bottom: 1px solid var(--border); }
+        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+        .expired { background: #fff5f5; color: var(--error); border: 1px solid #feb2b2; }
+        .active { background: #e6f9f3; color: var(--accent); border: 1px solid #b2f5ea; }
+        .btn-open-modal { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; }
+        .btn-add-cert { background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-add-cert:hover { background: #0da874; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(2px); }
+        .modal-content { background: white; padding: 30px; border-radius: 16px; width: 100%; max-width: 420px; box-shadow: var(--shadow); }
+        .modal-title { font-family: 'DM Serif Display', serif; color: var(--primary); margin-bottom: 6px; font-size: 1.6rem; }
+        .modal-subtitle { color: var(--muted); font-size: 0.85rem; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; }
+        .form-group input { width: 100%; padding: 10px; border: 2px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
+        .form-group input:focus { border-color: var(--primary); }
+        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-cancel { flex: 1; background: #edf2f7; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; }
+        .btn-submit { flex: 2; background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; }
+        .alert { border-radius: 10px; padding: 12px 18px; margin-bottom: 20px; font-size: 0.88rem; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+        .alert-success { background: #e6f9f3; color: #0a6e6e; border: 1px solid #12b886; }
+        .alert-error { background: #fff5f5; color: var(--error); border: 1px solid #fc8181; }
+        .error-msg { color: var(--error); font-size: 0.82rem; margin-top: 6px; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <a th:href="@{/procedures}" class="back-btn">← Back to Procedures</a>
+
+    <div th:if="${message != null and !message.isBlank()}"
+         th:class="${message.contains('Error') or message.contains('not found') or message.contains('Failed') or message.contains('duplicate') ? 'alert alert-error' : 'alert alert-success'}">
+        <span th:text="${message.contains('Error') or message.contains('not found') or message.contains('Failed') or message.contains('duplicate') ? '⚠️' : '✅'}"></span>
+        <span th:text="${message}"></span>
+    </div>
+
+    <div class="header">
+        <h1 th:text="'Training Records: ' + ${procedureName}">Procedure</h1>
+        <button type="button" class="btn-add-cert" onclick="openAddModal()">+ Add Certification</button>
+    </div>
+
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Physician</th>
+                    <th>Certified On</th>
+                    <th>Expires On</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="t : ${trainedIns}">
+                    <td>
+                        <div style="font-weight: 600;" th:text="${t.physicianEntity.name}">Name</div>
+                    </td>
+                    <td th:text="${#dates.format(t.certificationDate, 'dd MMM yyyy')}">Date</td>
+                    <td th:text="${#dates.format(t.certificationExpires, 'dd MMM yyyy')}">Date</td>
+                    <td>
+                        <span th:if="${t.hasExpired}" class="status-badge expired">EXPIRED</span>
+                        <span th:unless="${t.hasExpired}" class="status-badge active">VALID</span>
+                    </td>
+                    <td>
+                        <button th:if="${t.hasExpired}"
+                                type="button"
+                                class="btn-open-modal"
+                                th:attr="data-phys-id=${t.physician}, data-phys-name=${t.physicianEntity.name}"
+                                onclick="openRenewModal(this)">
+                            Renew
+                        </button>
+                        <span th:unless="${t.hasExpired}" style="color: var(--accent); font-weight: 600;">✓ Active</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Renew Modal -->
+<div id="renewModal" class="modal-overlay">
+    <div class="modal-content">
+        <h2 class="modal-title">Renew Certification</h2>
+        <p id="displayPhysicianName" class="modal-subtitle"></p>
+
+        <form th:action="@{/trainedIn/renew}" method="post" onsubmit="return validateRenewDates()">
+            <input type="hidden" name="treatmentId" th:value="${code}" />
+            <input type="hidden" name="procedureName" th:value="${procedureName}" />
+            <input type="hidden" id="hiddenPhysicianId" name="physicianId" />
+
+            <div class="form-group">
+                <label>New Certified Date</label>
+                <input type="date" name="certDate" id="certDateInput" required />
+            </div>
+            <div class="form-group">
+                <label>New Expiry Date</label>
+                <input type="date" name="expDate" id="expDateInput" required />
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeRenewModal()">Cancel</button>
+                <button type="submit" class="btn-submit">Confirm Renewal</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Add Certification Modal -->
+<div id="addModal" class="modal-overlay">
+    <div class="modal-content">
+        <h2 class="modal-title">Add Certification</h2>
+        <p class="modal-subtitle">Enter the physician ID and certification dates.</p>
+
+        <form id="addCertForm" th:action="@{/trainedIn/add}" method="post">
+            <input type="hidden" name="treatmentId" th:value="${code}" />
+            <input type="hidden" name="procedureName" th:value="${procedureName}" />
+
+            <div class="form-group">
+                <label>Physician ID</label>
+                <input type="number" name="physicianId" id="addPhysicianId" placeholder="e.g. 1001" min="1" required />
+                <div class="error-msg" id="physicianError"></div>
+            </div>
+            <div class="form-group">
+                <label>Certified On</label>
+                <input type="date" name="certDate" id="addCertDate" required />
+            </div>
+            <div class="form-group">
+                <label>Expires On</label>
+                <input type="date" name="expDate" id="addExpDate" required />
+                <div class="error-msg" id="addDateError"></div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeAddModal()">Cancel</button>
+                <button type="submit" class="btn-submit">Add Record</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const renewModal = document.getElementById('renewModal');
+
+    function openRenewModal(button) {
+        const id = button.getAttribute('data-phys-id');
+        const name = button.getAttribute('data-phys-name');
+        if (!id || id === 'null' || id === '') {
+            alert("Error: Physician ID was not sent by the server.");
+            return;
+        }
+        document.getElementById('hiddenPhysicianId').value = id;
+        document.getElementById('displayPhysicianName').innerText = "Physician: " + name;
+        renewModal.style.display = 'flex';
+    }
+
+    function closeRenewModal() { renewModal.style.display = 'none'; }
+
+    function validateRenewDates() {
+        const d1 = new Date(document.getElementById('certDateInput').value);
+        const d2 = new Date(document.getElementById('expDateInput').value);
+        if (d2 <= d1) {
+            alert("Expiry date must be after the certification date.");
+            return false;
+        }
+        return true;
+    }
+
+    const addModal = document.getElementById('addModal');
+
+    function openAddModal() {
+        document.getElementById('addPhysicianId').value = '';
+        document.getElementById('addCertDate').value = '';
+        document.getElementById('addExpDate').value = '';
+        document.getElementById('physicianError').style.display = 'none';
+        document.getElementById('physicianError').innerText = '';
+        document.getElementById('addDateError').style.display = 'none';
+        document.getElementById('addDateError').innerText = '';
+        addModal.style.display = 'flex';
+    }
+
+    function closeAddModal() { addModal.style.display = 'none'; }
+
+    document.getElementById('addCertForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        let valid = true;
+
+        const physId = document.getElementById('addPhysicianId').value.trim();
+        const physErr = document.getElementById('physicianError');
+        if (!physId || parseInt(physId) <= 0) {
+            physErr.innerText = 'Please enter a valid Physician ID.';
+            physErr.style.display = 'block';
+            valid = false;
+        } else {
+            physErr.style.display = 'none';
+        }
+
+        const certVal = document.getElementById('addCertDate').value;
+        const expVal  = document.getElementById('addExpDate').value;
+        const dateErr = document.getElementById('addDateError');
+        if (!certVal || !expVal) {
+            dateErr.innerText = 'Both dates are required.';
+            dateErr.style.display = 'block';
+            valid = false;
+        } else if (new Date(expVal) <= new Date(certVal)) {
+            dateErr.innerText = 'Expiry date must be after the certified date.';
+            dateErr.style.display = 'block';
+            valid = false;
+        } else {
+            dateErr.style.display = 'none';
+        }
+
+        if (valid) this.submit();
+    });
+
+    window.addEventListener('click', function(e) {
+        if (e.target === renewModal) closeRenewModal();
+        if (e.target === addModal)   closeAddModal();
+    });
+</script>
+
+</body>
+</html>
