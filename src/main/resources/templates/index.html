@@ -15,7 +15,6 @@
 
     <div class="w-full max-w-[1200px] text-center mb-16">
         <h1 class="text-[3.5rem] tracking-[-1px] text-[#0a6e6e] font-serif-dm mb-4">Hospital Management</h1>
-        <p class="text-[#718096] text-[1.1rem] font-light max-w-2xl mx-auto">Meet the development team behind our world-class medical operations management system.</p>
     </div>
 
     <!-- Developers Grid -->
@@ -23,17 +22,17 @@
         
         <!-- Developer Card Component (Repeat 6 times) -->
         <div th:each="dev : ${ {
-            {'name': 'Aniket', 'role': 'Room Management', 'link': '/rooms/General'},
-            {'name': 'Nikhil', 'role': 'Physician and Department Management', 'link': '/physicians'},
-            {'name': 'Suhani', 'role': 'Patient and Appointment Management', 'link': '/patients'},
-            {'name': 'Rohit', 'role': 'Medication and Prescription Management', 'link': '/medications'},
-            {'name': 'Mayank', 'role': 'Nurse Management', 'link': '/'},
-            {'name': 'Pragati', 'role': 'Procedure and Certification Management', 'link': '/procedures'}
-        } }" class="bg-white rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.08)] overflow-hidden flex flex-col items-center p-8 card-hover text-center">
+    {'name': 'Aniket', 'role': 'Room Management', 'link': '/rooms/General', 'img': '/aniket.jpeg'},
+    {'name': 'Nikhil', 'role': 'Physician and Department Management', 'link': '/physicians', 'img': '/nikhil.jpeg'},
+    {'name': 'Suhani', 'role': 'Patient and Appointment Management', 'link': '/patients', 'img': '/suhani.jpeg'},
+    {'name': 'Rohit', 'role': 'Medication and Prescription Management', 'link': '/medications', 'img': '/user.png'},
+    {'name': 'Mayank', 'role': 'Nurse Management', 'link': '/', 'img': '/user.png'},
+    {'name': 'Pragati', 'role': 'Procedure and Certification Management', 'link': '/procedures', 'img': '/pragati.jpeg'}
+    } }" class="bg-white rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.08)] overflow-hidden flex flex-col items-center p-8 card-hover text-center">
             
             <!-- Profile Image Holder -->
             <div class="mb-6 w-32 h-32 rounded-full border-4 border-[#e6f9f3] overflow-hidden bg-[#f7fffe]">
-                <img th:src="@{/user.png}" alt="Developer" class="w-full h-full object-cover">
+                <img th:src="@{${dev.img}}" alt="Developer" class="w-full h-full object-cover">
             </div>
 
             <!-- Name -->
@@ -45,6 +44,9 @@
                 View Work
             </a>
         </div>
+
     </div>
+
+
 </body>
 </html>
