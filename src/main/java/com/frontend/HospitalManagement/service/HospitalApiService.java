@@ -39,7 +39,7 @@ public class HospitalApiService {
     }
 
     public Map<String, Object> searchPhysiciansByPosition(String position, int page, int size) {
-        String url = backendUrl + "/allPhysician/search/findByPosition?position=" + position + "&page=" + page
+        String url = backendUrl + "/allPhysician/search/findByPositionContaining?position=" + position + "&page=" + page
                 + "&size=" + size;
         return fetchPhysicianPage(url);
     }
