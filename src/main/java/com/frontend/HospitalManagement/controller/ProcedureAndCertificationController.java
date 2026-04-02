@@ -69,13 +69,20 @@ public String addProcedure(@ModelAttribute ProcedureDto procedure) {
     if (procedure.getName() == null || procedure.getName().trim().isBlank()) {
         return "redirect:/procedures?message=Procedure+name+cannot+be+blank";
     }
+    if (procedure.getCost() > 9999999) {
+        return "redirect:/procedures?message=Cost+exceeds+maximum+allowed+limit";
+    }
     procedure.setName(procedure.getName().trim());
-
-    try {
-        apiService.addProcedure(procedure);
+    
+    String result = apiService.addProcedure(procedure);
+    if ("SUCCESS".equals(result)) {
         return "redirect:/procedures?message=Procedure+added+successfully";
-    } catch (Exception e) {
-        return "redirect:/procedures?message=Failed+to+add+procedure";
+    } else {
+        try {
+            return "redirect:/procedures?message=" + java.net.URLEncoder.encode(result, "UTF-8");
+        } catch (Exception e) {
+            return "redirect:/procedures?message=Failed+to+add+procedure";
+        }
     }
 }
 
@@ -83,6 +90,9 @@ public String addProcedure(@ModelAttribute ProcedureDto procedure) {
 public String updateProcedure(
         @RequestParam Integer code,
         @RequestParam Double cost) {
+    if (cost > 9999999) {
+        return "redirect:/procedures?message=Cost+exceeds+maximum+allowed+limit";
+    }
     apiService.updateProcedureCost(code, cost);
     return "redirect:/procedures?message=Cost+updated+successfully";
 }

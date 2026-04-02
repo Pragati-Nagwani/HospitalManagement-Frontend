@@ -47,19 +47,37 @@ public ProcedureResponse searchByName(String name, int page, int size) {
             .block();
 }
 
-public void addProcedure(ProcedureDto procedure) {
-    webClient.post()
-            .uri("/procedures")
-            .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
-            .bodyValue(procedure)
-            .retrieve()
-            .onStatus(
-                status -> status.is4xxClientError() || status.is5xxServerError(),
-                response -> response.bodyToMono(String.class)
-                    .map(body -> new RuntimeException("Backend error: " + body))
-            )
-            .bodyToMono(Void.class)
-            .block();
+public String addProcedure(ProcedureDto procedure) {
+    // Check if ID already exists
+    boolean exists = false;
+    try {
+        webClient.get()
+                .uri("/procedures/" + procedure.getCode())
+                .retrieve()
+                .toBodilessEntity()
+                .block();
+        exists = true;
+    } catch (Exception e) {
+        exists = false;
+    }
+
+    if (exists) {
+        return "id already exists";
+    }
+
+    try {
+        webClient.post()
+                .uri("/procedures")
+                .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                .bodyValue(procedure)
+                .retrieve()
+                .toBodilessEntity()
+                .block();
+        return "SUCCESS";
+    } catch (Exception e) {
+        e.printStackTrace();
+        return "Failed to add procedure";
+    }
 }
 public void updateProcedureCost(Integer code, Double cost) {
     String body = "{\"cost\": " + cost + "}";
