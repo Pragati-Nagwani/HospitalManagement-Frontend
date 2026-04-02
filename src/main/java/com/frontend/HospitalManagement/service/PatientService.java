@@ -123,9 +123,9 @@ public class PatientService {
 
         try {
             JsonNode node = objectMapper.readTree(response);
-            dto.setName(node.path("name").asText());
-            dto.setAddress(node.path("address").asText());
-            dto.setPhone(node.path("phone").asText());
+            dto.setName(node.path("name").asString());
+            dto.setAddress(node.path("address").asString());
+            dto.setPhone(node.path("phone").asString());
             dto.setInsuranceID(node.path("insuranceID").asInt());
             // pcpId left blank — user must re-enter only if changing
 
@@ -192,7 +192,7 @@ public class PatientService {
                     PatientDto patient = new PatientDto();
 
                     // Extract SSN from self href, fallback to direct field
-                    String selfHref = node.path("_links").path("self").path("href").asText("");
+                    String selfHref = node.path("_links").path("self").path("href").asString("");
                     if (!selfHref.isEmpty()) {
                         String cleanHref = selfHref.split("\\?")[0];
                         String ssnStr = cleanHref.substring(cleanHref.lastIndexOf('/') + 1);
@@ -205,13 +205,13 @@ public class PatientService {
                         patient.setSsn(node.path("ssn").asInt());
                     }
 
-                    patient.setName(node.path("name").asText());
-                    patient.setAddress(node.path("address").asText());
-                    patient.setPhone(node.path("phone").asText());
+                    patient.setName(node.path("name").asString());
+                    patient.setAddress(node.path("address").asString());
+                    patient.setPhone(node.path("phone").asString());
 
-                    String pcpName = node.path("pcpName").asText("");
+                    String pcpName = node.path("pcpName").asString("");
                     if (pcpName.isEmpty()) {
-                        pcpName = node.path("pcp").path("name").asText("Unknown");
+                        pcpName = node.path("pcp").path("name").asString("Unknown");
                     }
                     patient.setPcpName(pcpName);
 
@@ -264,16 +264,16 @@ public class PatientService {
                     dto.setAppointmentId(node.path("appointmentId").asInt());
 
                     // Date formatting: replace T separator and trim to minute precision
-                    String rawStart = node.path("starto").asText();
-                    String rawEnd   = node.path("endo").asText();
+                    String rawStart = node.path("starto").asString();
+                    String rawEnd   = node.path("endo").asString();
                     dto.setStarto(rawStart != null && rawStart.contains("T")
                             ? rawStart.replace("T", " ").substring(0, 16) : rawStart);
                     dto.setEndo(rawEnd != null && rawEnd.contains("T")
                             ? rawEnd.replace("T", " ").substring(0, 16) : rawEnd);
 
-                    dto.setExaminationRoom(node.path("examinationRoom").asText());
+                    dto.setExaminationRoom(node.path("examinationRoom").asString());
                     dto.setPhysicianName(node.path("physicianName")
-                            .asText(node.path("physician").path("name").asText("Unknown")));
+                            .asString(node.path("physician").path("name").asString("Unknown")));
 
                     appointmentList.add(dto);
                 }

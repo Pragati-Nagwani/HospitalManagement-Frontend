@@ -27,11 +27,23 @@ public class RoomController {
     public String getRoomsByType(@PathVariable("type") String type, 
                                  @org.springframework.web.bind.annotation.RequestParam(value = "page", defaultValue = "0") int page,
                                  Model model) {
-        RoomResponseDto roomResponse = roomService.getRoomsByType(type, page);
-        model.addAttribute("rooms", roomResponse.getRooms());
-        model.addAttribute("page", roomResponse.getPage());
-        model.addAttribute("roomType", type + " Rooms");
-        return "room/rooms";
+        try {
+            RoomResponseDto roomResponse = roomService.getRoomsByType(type, page);
+            model.addAttribute("rooms", roomResponse.getRooms());
+            model.addAttribute("page", roomResponse.getPage());
+            model.addAttribute("roomType", type);
+            return "room/rooms";
+        } catch (Exception e) {
+            if ("General".equalsIgnoreCase(type)) {
+                model.addAttribute("rooms", java.util.Collections.emptyList());
+                model.addAttribute("page", null);
+                model.addAttribute("roomType", "General");
+                model.addAttribute("popupMessage", "Could not load rooms. Server might be down or unavailable.");
+                model.addAttribute("popupType", "error");
+                return "room/rooms";
+            }
+            throw e;
+        }
     }
 
     @GetMapping("/rooms/search")
@@ -134,6 +146,17 @@ public class RoomController {
         UpdateRoomUnavailabilityDTO dto = new UpdateRoomUnavailabilityDTO(!unavailable);
         roomService.toggleUnavailability(dto, roomNumber);
         
+        if (roomType != null && roomType.startsWith("Search")) {
+            return "redirect:/rooms/search?roomNumber=" + roomNumber;
+        }
+        
         return "redirect:/rooms/" + roomType;
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(Exception.class)
+    public String handleException(Exception ex) {
+        // Redirect completely invalid paths or server errors to /rooms/General 
+        // to prevent 404 or 500 error pages from crashing the UI routing
+        return "redirect:/rooms/General";
     }
 }

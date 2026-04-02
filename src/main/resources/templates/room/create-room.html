@@ -52,6 +52,7 @@
             <div class="flex flex-col gap-1.5">
                 <label for="roomNumber" class="text-[0.95rem] text-[#1a202c]">Room Number</label>
                 <input type="number" id="roomNumber" th:field="*{roomNumber}" placeholder="e.g. 101" required
+                       min="0" max="9999" onkeydown="return event.key !== 'e' && event.key !== 'E' && event.key !== '+' && event.key !== '-' && event.key !== '.'" oninput="if(this.value.length > 4) this.value = this.value.slice(0, 4);"
                        class="w-full bg-white border-2 border-[#e2e8f0] text-[#1a202c] px-5 py-3 rounded-[10px] text-[0.95rem] focus:outline-none focus:border-[#0a6e6e] transition-all shadow-[0_4px_24px_rgba(0,0,0,0.08)]">
             </div>
 
@@ -70,12 +71,14 @@
                 <div class="flex-1 flex flex-col gap-1.5">
                     <label for="blockFloor" class="text-[0.95rem] text-[#1a202c]">Floor</label>
                     <input type="number" id="blockFloor" th:field="*{blockFloor}" placeholder="e.g. 1" required
+                           min="0" max="9999" onkeydown="return event.key !== 'e' && event.key !== 'E' && event.key !== '+' && event.key !== '-' && event.key !== '.'" oninput="if(this.value.length > 4) this.value = this.value.slice(0, 4);"
                            class="w-full bg-white border-2 border-[#e2e8f0] text-[#1a202c] px-5 py-3 rounded-[10px] text-[0.95rem] focus:outline-none focus:border-[#0a6e6e] transition-all shadow-[0_4px_24px_rgba(0,0,0,0.08)]">
                 </div>
                 
                 <div class="flex-1 flex flex-col gap-1.5">
                     <label for="blockCode" class="text-[0.95rem] text-[#1a202c]">Block Code</label>
                     <input type="number" id="blockCode" th:field="*{blockCode}" placeholder="e.g. 101" required
+                           min="0" max="9999" onkeydown="return event.key !== 'e' && event.key !== 'E' && event.key !== '+' && event.key !== '-' && event.key !== '.'" oninput="if(this.value.length > 4) this.value = this.value.slice(0, 4);"
                            class="w-full bg-white border-2 border-[#e2e8f0] text-[#1a202c] px-5 py-3 rounded-[10px] text-[0.95rem] focus:outline-none focus:border-[#0a6e6e] transition-all shadow-[0_4px_24px_rgba(0,0,0,0.08)]">
                 </div>
             </div>
