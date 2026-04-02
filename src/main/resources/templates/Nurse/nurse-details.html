@@ -125,25 +125,15 @@
         <div class="row">
             <span class="label">Status:</span>
 
-            <span th:if="${appointment != null}" class="badge busy">
-                BUSY (APPOINTMENT)
-            </span>
-
-            <span th:if="${appointment == null and oncall != null}" class="badge oncall">
-                ON CALL
-            </span>
-
-            <span th:if="${appointment == null and oncall == null}" class="badge available">
-                AVAILABLE
-            </span>
+            <span th:if="${status == 'BUSY'}" class="badge red">BUSY</span>
+            <span th:if="${status == 'ON CALL'}" class="badge blue">ON CALL</span>
+            <span th:if="${status == 'AVAILABLE'}" class="badge green">AVAILABLE</span>
         </div>
 
         <a th:href="@{/nurses/edit/{id}(id=${nurse.employeeId})}" class="btn">Edit Nurse</a>
     </div>
 
-    <!-- ========================= -->
     <!-- CURRENT APPOINTMENT -->
-    <!-- ========================= -->
     <div class="card">
         <h3>Current Appointment</h3>
 
@@ -187,21 +177,20 @@
     <div class="card">
         <h3>On-Call Duty</h3>
 
-        <div th:if="${oncall != null}">
-
-            <div class="row">
-                <span class="label">Block Code:</span>
-                <span th:text="${oncall.blockCode}"></span>
-            </div>
-
-            <div class="row">
-                <span class="label">Floor:</span>
-                <span th:text="${oncall.blockFloor}"></span>
-            </div>
-
+        <div th:if="${onCall != null}">
+            <p>
+                Block Floor:
+                <span th:text="${onCall['blockFloor']}"></span> -
+                Block Code:
+                <span th:text="${onCall['blockCode']}"></span>
+            </p>
         </div>
 
-        <div th:if="${oncall == null}" class="empty">
+        <div th:if="${onCall == null}">
+            <p>No on-call duty assigned</p>
+        </div>
+
+        <div th:if="${onCall == null}" class="empty">
             No on-call duty assigned
         </div>
     </div>

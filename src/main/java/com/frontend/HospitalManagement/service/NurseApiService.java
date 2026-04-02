@@ -47,9 +47,7 @@ public class NurseApiService {
                 .block();
     }
 
-    // ===========================
-    // ✅ GET NURSES
-    // ===========================
+
     public NursePageResponse getNurses(int page, int size, String keyword, String positionFilter) {
 
         String json = call("/nurse?projection=nurseView&page=0&size=1000", HttpMethod.GET, null);
@@ -58,21 +56,46 @@ public class NurseApiService {
 
         try {
             JsonNode root = objectMapper.readTree(json);
-            JsonNode nurses = root.path("_embedded").path("nurses");
+
+            JsonNode embedded = root.path("_embedded");
+            if (embedded.isMissingNode()) {
+                return new NursePageResponse();
+            }
+
+            JsonNode nurses = embedded.path("nurses");
+            if (!nurses.isArray()) {
+                return new NursePageResponse();
+            }
 
             for (JsonNode node : nurses) {
 
+                if (node == null || node.isNull()) continue;
+
                 NurseDTO dto = new NurseDTO();
 
-                // ✅ Extract ID from link
-                String href = node.path("_links").path("self").path("href").asText();
-                Integer id = Integer.parseInt(href.substring(href.lastIndexOf("/") + 1));
-                dto.setEmployeeId(id);
 
-                dto.setName(node.path("name").asText());
-                dto.setPosition(node.path("position").asText());
-                dto.setRegistered(node.path("registered").asBoolean());
-                dto.setAvailability(node.path("availability").asText());
+                JsonNode linkNode = node.path("_links").path("self").path("href");
+                if (!linkNode.isMissingNode()) {
+                    String href = linkNode.asText();
+
+                    if (href != null && href.contains("/")) {
+                        try {
+                            Integer id = Integer.parseInt(href.substring(href.lastIndexOf("/") + 1));
+                            dto.setEmployeeId(id);
+                        } catch (Exception e) {
+                            continue;
+                        }
+                    }
+                }
+
+
+                if (dto.getEmployeeId() == null) continue;
+
+
+                dto.setName(node.path("name").asText("N/A"));
+                dto.setPosition(node.path("position").asText("N/A"));
+                dto.setRegistered(node.path("registered").asBoolean(false));
+                dto.setAvailability(node.path("availability").asText("UNKNOWN"));
 
                 allNurses.add(dto);
             }
@@ -81,31 +104,39 @@ public class NurseApiService {
             throw new RuntimeException("Error parsing nurse data", e);
         }
 
-        // 🔍 SEARCH
-        if (keyword != null && !keyword.isEmpty()) {
+
+        if (keyword != null && !keyword.isBlank()) {
+            String lower = keyword.toLowerCase();
+
             allNurses = allNurses.stream()
-                    .filter(n -> n.getName().toLowerCase().contains(keyword.toLowerCase())
-                            || n.getPosition().toLowerCase().contains(keyword.toLowerCase()))
+                    .filter(n ->
+                            (n.getName() != null && n.getName().toLowerCase().contains(lower)) ||
+                                    (n.getPosition() != null && n.getPosition().toLowerCase().contains(lower))
+                    )
                     .toList();
         }
 
-        // 🎯 FILTER
-        if (positionFilter != null && !positionFilter.isEmpty()) {
+
+        if (positionFilter != null && !positionFilter.isBlank()) {
             allNurses = allNurses.stream()
-                    .filter(n -> n.getPosition().equalsIgnoreCase(positionFilter))
+                    .filter(n ->
+                            n.getPosition() != null &&
+                                    n.getPosition().equalsIgnoreCase(positionFilter)
+                    )
                     .toList();
         }
 
-        // 📄 PAGINATION
+
+        int totalElements = allNurses.size();
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+
         int start = page * size;
-        int end = Math.min(start + size, allNurses.size());
+        int end = Math.min(start + size, totalElements);
 
         List<NurseDTO> pageList = new ArrayList<>();
-        if (start < allNurses.size()) {
+        if (start < totalElements) {
             pageList = allNurses.subList(start, end);
         }
-
-        int totalPages = (int) Math.ceil((double) allNurses.size() / size);
 
         NursePageResponse result = new NursePageResponse();
         result.setNurses(pageList);
@@ -194,7 +225,7 @@ public class NurseApiService {
 
     public Map<String, Object> getOnCallByNurse(Integer nurseId) {
 
-        String uri = "/oncalls/search/byNurse?nurse=" + nurseId;
+        String uri = "/oncalls/search/byNurse?nurse=" + nurseId + "&projection=onCallView";
 
         Map<String, Object> response = webClient.get()
                 .uri(uri)
@@ -202,17 +233,31 @@ public class NurseApiService {
                 .bodyToMono(Map.class)
                 .block();
 
+        if (response == null) return null;
         Map<String, Object> embedded = (Map<String, Object>) response.get("_embedded");
-
-        if (embedded == null || embedded.get("oncalls") == null) return null;
-
+        if (embedded == null) return null;
         List<Map<String, Object>> list =
-                (List<Map<String, Object>>) embedded.get("oncalls");
-
-        if (list.isEmpty()) return null;
-
+                (List<Map<String, Object>>) embedded.get("onCalls");
+        if (list == null || list.isEmpty()) return null;
         return list.get(0);
     }
+    public String getNurseStatus(Integer nurseId) {
+        // check appointment
+        Map<String, Object> appointment = getAppointmentByNurse(nurseId);
+
+        if (appointment != null) {
+            return "BUSY";
+        }
+        // check onCall
+        Map<String, Object> onCall = getOnCallByNurse(nurseId);
+
+        if (onCall != null) {
+            return "ON CALL";
+        }
+
+        return "AVAILABLE";
+    }
+
 
 
 }

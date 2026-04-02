@@ -160,6 +160,49 @@
         .pagination a:hover {
             background: #eaeaea;
         }
+        .top-bar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.search-filter {
+    display: flex;
+    gap: 10px;
+}
+
+.search-filter input,
+.search-filter select {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.add-btn {
+    background: #1f6f6d;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+.pagination {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.pagination button {
+    margin: 3px;
+    padding: 6px 10px;
+    border: none;
+    background: #ddd;
+    border-radius: 5px;
+}
+
+.active-page {
+    background: #1f6f6d;
+    color: white;
+}
 
     </style>
 </head>
@@ -177,12 +220,25 @@
     <!-- TOP BAR -->
     <div class="top-bar">
 
-        <form class="search-box" method="get" action="/nurses">
-            <input type="text" name="keyword" placeholder="Search nurse..." th:value="${keyword}">
-            <button class="btn btn-primary">Search</button>
+        <form method="get" action="/nurses" class="search-filter">
+
+            <input type="text"
+                   name="keyword"
+                   placeholder="Search nurse..."
+                   th:value="${keyword}" />
+
+            <select name="positionFilter">
+                <option value="">All</option>
+                <option value="Staff Nurse" th:selected="${positionFilter == 'Staff Nurse'}">Staff Nurse</option>
+                <option value="Nurse" th:selected="${positionFilter == 'Nurse'}">Nurse</option>
+                <option value="Head Nurse" th:selected="${positionFilter == 'Head Nurse'}">Head Nurse</option>
+            </select>
+
+            <button type="submit">Search</button>
+
         </form>
 
-        <a href="/nurses/add" class="btn btn-primary">+ Add Nurse</a>
+        <a href="/nurses/add" class="add-btn">+ Add Nurse</a>
 
     </div>
 
@@ -202,17 +258,20 @@
             </thead>
 
             <tbody>
-            <tr th:each="nurse, stat : ${nurses}">
-                <td th:text="${stat.index + 1}"></td>
+            <tr th:each="nurse, iter : ${nurses}">
+
+                <td th:text="${currentPage * 10 + iter.index + 1}"></td>
+
                 <td th:text="${nurse.name}"></td>
                 <td th:text="${nurse.position}"></td>
                 <td th:text="${nurse.registered ? 'Yes' : 'No'}"></td>
 
-                <td>
-                    <span th:class="'badge ' + (${nurse.availability} == 'AVAILABLE' ? 'available' : 'busy')"
-                          th:text="${nurse.availability}">
-                    </span>
-                </td>
+            </tr>
+            <td>
+                    <span th:if="${nurse != null}"
+                          th:text="${nurse.availability}">N/A</span>
+                                <span th:if="${nurse == null}">N/A</span>
+            </td>>
 
                 <td class="actions">
                     <a th:href="@{/nurses/view/{id}(id=${nurse.employeeId})}" class="view-btn">View</a>
@@ -227,22 +286,22 @@
     <!-- PAGINATION -->
     <div class="pagination">
 
-        <a th:if="${currentPage > 0}"
-           th:href="@{/nurses(page=${currentPage - 1}, keyword=${keyword})}">
+        <button th:if="${currentPage > 0}"
+                th:onclick="'window.location.href=\'/nurses?page=' + ${currentPage - 1} + '&keyword=' + ${keyword} + '&positionFilter=' + ${positionFilter} + '\''">
             Prev
-        </a>
+        </button>
 
         <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
-            <a th:href="@{/nurses(page=${i}, keyword=${keyword})}"
-               th:text="${i + 1}"
-               th:classappend="${i == currentPage} ? 'active' : ''">
-            </a>
-        </span>
+        <button th:text="${i + 1}"
+                th:classappend="${i == currentPage} ? 'active-page' : ''"
+                th:onclick="'window.location.href=\'/nurses?page=' + ${i} + '&keyword=' + ${keyword} + '&positionFilter=' + ${positionFilter} + '\''">
+        </button>
+    </span>
 
-        <a th:if="${currentPage < totalPages - 1}"
-           th:href="@{/nurses(page=${currentPage + 1}, keyword=${keyword})}">
+        <button th:if="${currentPage < totalPages - 1}"
+                th:onclick="'window.location.href=\'/nurses?page=' + ${currentPage + 1} + '&keyword=' + ${keyword} + '&positionFilter=' + ${positionFilter} + '\''">
             Next
-        </a>
+        </button>
 
     </div>
 

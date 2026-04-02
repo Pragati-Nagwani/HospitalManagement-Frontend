@@ -76,7 +76,8 @@
             <input type="number" th:field="*{employeeId}" required>
 
             <label>Name</label>
-            <input type="text" th:field="*{name}" required>
+            <input type="text" name="name" required />
+            <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
 
             <label>Position</label>
             <input type="text" th:field="*{position}" required>
@@ -88,7 +89,8 @@
             </select>
 
             <label>SSN</label>
-            <input type="number" th:field="*{ssn}" required>
+            <input type="number" name="ssn" required />
+            <span th:if="${#fields.hasErrors('ssn')}" th:errors="*{ssn}"></span>
 
             <button type="submit">Save</button>
 
